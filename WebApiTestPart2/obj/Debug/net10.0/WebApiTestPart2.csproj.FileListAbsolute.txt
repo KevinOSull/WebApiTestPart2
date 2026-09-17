@@ -1,0 +1,14 @@
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\bin\Debug\net10.0\WebApiTestPart2.exe
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\bin\Debug\net10.0\WebApiTestPart2.deps.json
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\bin\Debug\net10.0\WebApiTestPart2.runtimeconfig.json
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\bin\Debug\net10.0\WebApiTestPart2.dll
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\bin\Debug\net10.0\WebApiTestPart2.pdb
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\obj\Debug\net10.0\WebApiTestPart2.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\obj\Debug\net10.0\WebApiTestPart2.AssemblyInfoInputs.cache
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\obj\Debug\net10.0\WebApiTestPart2.AssemblyInfo.cs
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\obj\Debug\net10.0\WebApiTestPart2.csproj.CoreCompileInputs.cache
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\obj\Debug\net10.0\WebApiTestPart2.dll
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\obj\Debug\net10.0\refint\WebApiTestPart2.dll
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\obj\Debug\net10.0\WebApiTestPart2.pdb
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\obj\Debug\net10.0\WebApiTestPart2.genruntimeconfig.cache
+C:\Users\kevin\RiderProjects\WebApiTestPart2\WebApiTestPart2\obj\Debug\net10.0\ref\WebApiTestPart2.dll
