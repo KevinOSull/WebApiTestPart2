@@ -177,9 +177,7 @@ public class Program
 
 	private static void BuildPageUrl(int artistId,int pageNumber)
 	{
-		//url = SearchUrl + "?page=" + pageNumber;
 		url = "https://api.discogs.com/artists/" + artistId + "/releases?page=" + pageNumber;
-		
 	}
 	
 	private static void BuildLabelPageUrl(int labelId, int pageNumber)
