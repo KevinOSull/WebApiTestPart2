@@ -15,12 +15,18 @@ public class Program
     private static readonly string FilePath = "resources/releaseData.csv";
     private static string? artistName;
     private static string? recordLabelName;
+
     public static async Task Main(string[] args)
     {
-	    OptionsMenu();
-	    int choice = GetSelectionChoice();
-	    SetRequestHeaders();
-	    await MakeSelection(choice);
+	    int choice;
+	    do
+	    {
+		    OptionsMenu();
+		    choice = GetSelectionChoice();
+		    SetRequestHeaders();
+		    await MakeSelection(choice);
+
+	    } while (choice != 0);
     }
 
     private static int GetSelectionChoice()
@@ -139,6 +145,7 @@ public class Program
 				break;
 			
 			case 0:
+				break;
 				
 			default:
 				Console.WriteLine("SOMETHING WENT WRONG!");
@@ -158,6 +165,7 @@ public class Program
 
 	private static void SetRequestHeaders()
 	{
+		Client.DefaultRequestHeaders.Remove("Authorization");
 		Client.DefaultRequestHeaders.UserAgent.ParseAdd(
 			"WebAPITest/1.0"
 		);
