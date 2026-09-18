@@ -15,6 +15,7 @@ public class Program
     private static readonly string FilePath = "resources/releaseData.csv";
     private static string? artistName;
     private static string? recordLabelName;
+	private static int fileOptionChoice;
 
     public static async Task Main(string[] args)
     {
@@ -28,6 +29,18 @@ public class Program
 
 	    } while (choice != 0);
     }
+
+	private static async Task EntryPoint()
+	{
+		int choice;
+		do
+		{
+			OptionsMenu();
+			choice = GetSelectionChoice();
+			SetRequestHeaders();
+			await MakeSelection(choice);
+		} while (choice != 0);
+	}
 
     private static int GetSelectionChoice()
     {
@@ -131,7 +144,9 @@ public class Program
 				int artIndex = getArtistIndex();
 				int artistId = GetArtistId(results, artIndex);
 				await FetchAndProcessReleases(artistId);
-				break;
+                GetFileOptionChoiceFromUser();
+                GetFileOption();
+                break;
 				
 			case 2:
 				recordLabelName = GetRecordLabelName();
@@ -149,6 +164,30 @@ public class Program
 				
 			default:
 				Console.WriteLine("SOMETHING WENT WRONG!");
+				break;
+		}
+	}
+
+	private static int GetFileOptionChoiceFromUser()
+	{
+		Console.WriteLine("Press 1 to save search to csv file or 2 to return to main menu: ");
+		fileOptionChoice = Convert.ToInt32(Console.ReadLine());
+		return fileOptionChoice;
+	}
+
+	private static void GetFileOption()
+	{
+		switch (fileOptionChoice)
+		{
+			case 1:
+				Console.WriteLine("File stuff");
+				break;
+
+			case 2:
+				break;
+
+			default:
+				Console.WriteLine("ERROR!");
 				break;
 		}
 	}
