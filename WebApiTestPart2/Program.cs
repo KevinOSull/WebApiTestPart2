@@ -3,32 +3,23 @@ using WebApiTestPart2;
 
 public class Program
 {
-    private static readonly string? ApiToken = Environment.GetEnvironmentVariable("DISCOGS_API_TOKEN");
-    //private static readonly string SearchUrl = "https://api.discogs.com/artists/22217/releases";
-    private static readonly string SearchUrl = "https://api.discogs.com/artistName/releases";
-    private static readonly HttpClient Client = new HttpClient();
-    private static string? url;
-    private static string? recordLabelUrl;
-    private static string year;
-    private static List<ReleaseData> releaseData = new List<ReleaseData>();
-    private static readonly string FolderPath = "resources";
-    private static readonly string FilePath = "resources/releaseData.csv";
-    private static string? artistName;
-    private static string? recordLabelName;
+	private static readonly string? ApiToken = Environment.GetEnvironmentVariable("DISCOGS_API_TOKEN");
+	private static readonly string SearchUrl = "https://api.discogs.com/artistName/releases";
+	private static readonly HttpClient Client = new HttpClient();
+	private static string? url;
+	private static string? recordLabelUrl;
+	private static string year;
+	private static List<ReleaseData> releaseData = new List<ReleaseData>();
+	private static readonly string FolderPath = "resources";
+	private static readonly string FilePath = "resources/releaseData.csv";
+	private static string? artistName;
+	private static string? recordLabelName;
 	private static int fileOptionChoice;
 
-    public static async Task Main(string[] args)
-    {
-	    int choice;
-	    do
-	    {
-		    OptionsMenu();
-		    choice = GetSelectionChoice();
-		    SetRequestHeaders();
-		    await MakeSelection(choice);
-
-	    } while (choice != 0);
-    }
+	public static async Task Main(string[] args)
+	{
+		await EntryPoint();
+	}
 
 	private static async Task EntryPoint()
 	{
@@ -42,85 +33,61 @@ public class Program
 		} while (choice != 0);
 	}
 
-    private static int GetSelectionChoice()
-    {
-	    Console.WriteLine("Please choose an option: ");
-	    int choice = Convert.ToInt32(Console.ReadLine());
-	    return choice;
-    }
-
-    private static int GetArtistId(JsonArray results, int artIndex)
-    {
-	    JsonObject? res = results[artIndex]?.AsObject();
-	    int num = res!["id"].AsValue().GetValue<int>();
-	    return num;
-    }
-
-    private static int GetNumberOfPages(JsonObject results)
-    {
-	    JsonObject? res = results["pagination"]?.AsObject();
-	    int numOfPages = res!["pages"].AsValue().GetValue<int>();
-	    return numOfPages;
-    }
-    
-    private static async Task<JsonObject> GetJsonObjectFromResponse(HttpResponseMessage response)
-    {
-	    string responseBody = await response.Content.ReadAsStringAsync();
-	    JsonNode? json = JsonNode.Parse(responseBody);
-	    return json!.AsObject();
-    }
-
-    private static void PrintResults(JsonArray json)
-    {
-	    for (int i = 0; i < json.Count; i++)
-	    {
-		    JsonObject? art = json[i]?.AsObject();
-		    Console.WriteLine(( i + 1) + ".)" + art!["title"] );
-	    }
-    }
-    
-    private static async Task FetchAndProcessReleases(int artistId)
+	private static int GetSelectionChoice()
 	{
-		BuildPageUrl(artistId, 1);
-		HttpResponseMessage firstResponse = await SendRequest();
-
-		JsonObject firstJson = await GetJsonObjectFromResponse(firstResponse);
-		int numberOfPages = GetNumberOfPages(firstJson);
-		JsonArray firstPageReleases = firstJson["releases"]!.AsArray();
-		AddReleasesToList(firstPageReleases);
-		for (int i = 2; i <= numberOfPages; i++)
-		{
-			BuildPageUrl(artistId,i);
-			HttpResponseMessage res = await SendRequest();
-			JsonArray json = await GetReleasesFromResponse(res,"releases");
-			AddReleasesToList(json);
-		}	
-		SortReleasesByYear();
-		//WriteDataToFile();
-		PrintReleases();
+		Console.WriteLine("Please choose an option: ");
+		int choice = Convert.ToInt32(Console.ReadLine());
+		return choice;
 	}
-    
-	private static async Task FetchAndProcessLabelReleases(int labelId)
+
+	private static int GetId(JsonArray results, int artIndex)
 	{
-		BuildLabelPageUrl(labelId, 1);
-		HttpResponseMessage firstResponse = await SendRequest();
+		JsonObject? res = results[artIndex]?.AsObject();
+		int num = res!["id"].AsValue().GetValue<int>();
+		return num;
+	}
 
-		JsonObject firstJson = await GetJsonObjectFromResponse(firstResponse);
-		int numberOfPages = GetNumberOfPages(firstJson);
-		JsonArray firstPageReleases = firstJson["releases"]!.AsArray();
-		AddReleasesToList(firstPageReleases);
+	private static int GetNumberOfPages(JsonObject results)
+	{
+		JsonObject? res = results["pagination"]?.AsObject();
+		int numOfPages = res!["pages"].AsValue().GetValue<int>();
+		return numOfPages;
+	}
 
-		for (int i = 2; i <= numberOfPages; i++)
+	private static async Task<JsonObject> GetJsonObjectFromResponse(HttpResponseMessage response)
+	{
+		string responseBody = await response.Content.ReadAsStringAsync();
+		JsonNode? json = JsonNode.Parse(responseBody);
+		return json!.AsObject();
+	}
+
+	private static void PrintResults(JsonArray json)
+	{
+		for (int i = 0; i < json.Count; i++)
 		{
-			BuildLabelPageUrl(labelId, i);
-			HttpResponseMessage res = await SendRequest();
-			JsonArray json = await GetReleasesFromResponse(res, "releases");
-			AddReleasesToList(json);
+			JsonObject? art = json[i]?.AsObject();
+			Console.WriteLine((i + 1) + ".)" + art!["title"]);
 		}
-
+	}
+	
+	private static async Task FetchGenericResults(int id, string type)
+	{
+		BuildGenericPageUrl(id,1,type);
+        HttpResponseMessage firstResponse = await SendRequest();
+		JsonObject firstJson = await GetJsonObjectFromResponse(firstResponse);
+        int numberOfPages = GetNumberOfPages(firstJson);
+        JsonArray firstPageReleases = firstJson["releases"]!.AsArray();
+        AddReleasesToList(firstPageReleases);
+		for(int i = 2; i <= numberOfPages; i++)
+		{
+			BuildGenericPageUrl(id, i, type);
+            HttpResponseMessage res = await SendRequest();
+            JsonArray json = await GetReleasesFromResponse(res, "releases");
+            AddReleasesToList(json);
+        }
 		SortReleasesByYear();
 		PrintReleases();
-	}
+    }
 
 	private static void OptionsMenu()
 	{
@@ -136,36 +103,50 @@ public class Program
 		switch (choice)
 		{
 			case 1:
-				artistName = GetArtistName();
-				BuildArtistSearchUrl();
-				HttpResponseMessage artistResponse = await SendRequest();
-				JsonArray results = await GetReleasesFromResponse(artistResponse, "results");
-				PrintResults(results);
-				int artIndex = getArtistIndex();
-				int artistId = GetArtistId(results, artIndex);
-				await FetchAndProcessReleases(artistId);
-                GetFileOptionChoiceFromUser();
-                GetFileOption();
-                break;
-				
-			case 2:
-				recordLabelName = GetRecordLabelName();
-				BuildRecordLabelSearchUrl();
-				HttpResponseMessage labelResponse = await SendRequest();
-				JsonArray labelResults = await GetReleasesFromResponse(labelResponse, "results");
-				PrintResults(labelResults);
-				int recordLabelIndex = getArtistIndex();
-				int recordLabelId = GetArtistId(labelResults, recordLabelIndex);
-				await FetchAndProcessLabelReleases(recordLabelId);
+				await ProcessSearch("artists");
 				break;
-			
+
+			case 2:
+				await ProcessSearch("labels");
+				break;
+
 			case 0:
 				break;
-				
+
 			default:
 				Console.WriteLine("SOMETHING WENT WRONG!");
 				break;
 		}
+	}
+
+	private static async Task ProcessSearch(string type)
+	{
+		if (type.Equals("artists"))
+		{
+			artistName = GetArtistName();
+			BuildArtistSearchUrl();
+			int artistId = await GetSelectedId();
+			await FetchGenericResults(artistId, "artists");
+		}
+		else if (type.Equals("labels"))
+		{
+			recordLabelName = GetRecordLabelName();
+			BuildRecordLabelSearchUrl();
+			int recordLabelId = await GetSelectedId();
+			await FetchGenericResults(recordLabelId, "labels");
+		}
+		GetFileOptionChoiceFromUser();
+		GetFileOption();
+	}
+
+	private static async Task<int> GetSelectedId()
+	{
+		HttpResponseMessage response = await SendRequest();
+		JsonArray results = await GetReleasesFromResponse(response, "results");
+		PrintResults(results);
+		int index = GetIndex();
+		int id = GetId(results, index);
+		return id;
 	}
 
 	private static int GetFileOptionChoiceFromUser()
@@ -214,20 +195,15 @@ public class Program
 		);
 	}
 
-	private static void BuildPageUrl(int artistId,int pageNumber)
+	private static void BuildGenericPageUrl(int id, int pageNumber, string type)
 	{
-		url = "https://api.discogs.com/artists/" + artistId + "/releases?page=" + pageNumber;
+		url = "https://api.discogs.com/" + type + "/" + id + "/releases?page=" + pageNumber;
 	}
 	
-	private static void BuildLabelPageUrl(int labelId, int pageNumber)
-	{
-		url = "https://api.discogs.com/labels/" + labelId + "/releases?page=" + pageNumber;
-	}
-
 	private static async Task<HttpResponseMessage> SendRequest()
 	{
 		HttpResponseMessage response =
-			await Client.GetAsync(url);
+		await Client.GetAsync(url);
 		response.EnsureSuccessStatusCode();
 		return response;
 	}
@@ -250,24 +226,16 @@ public class Program
 	private static String GetRecordLabelName()
 	{
 		Console.WriteLine("Please enter the name of the record label: ");
-		string recordLabelName = Console.ReadLine();
+		string? recordLabelName = Console.ReadLine();
 		return recordLabelName;
-	}
+	} 
 
-	private static int getArtistIndex()
+	private static int GetIndex()
 	{
-		Console.WriteLine("Enter Artist Number: ");
-		int artistIndex = int.Parse(Console.ReadLine())-1;
-		return artistIndex;
+		Console.WriteLine("Enter ID Number: ");
+		int index = int.Parse(Console.ReadLine())-1;
+		return index;
 	}
-
-	/*private static async Task<JsonArray> GetReleasesFromResponse(HttpResponseMessage response)
-	{
-		string responseBody = await response.Content.ReadAsStringAsync();
-		JsonNode? json = JsonNode.Parse(responseBody);
-		JsonArray releases = json!["releases"]!.AsArray();
-		return releases;
-	}*/
 
 	private static void SortReleasesByYear()
 	{
