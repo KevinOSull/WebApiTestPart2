@@ -15,6 +15,7 @@ public class Program
 	private static string? artistName;
 	private static string? recordLabelName;
 	private static int fileOptionChoice;
+	private static string fileName;
 
 	public static async Task Main(string[] args)
 	{
@@ -161,7 +162,7 @@ public class Program
 		switch (fileOptionChoice)
 		{
 			case 1:
-				Console.WriteLine("File stuff");
+				GiveCsvFileName();
 				break;
 
 			case 2:
@@ -171,6 +172,13 @@ public class Program
 				Console.WriteLine("ERROR!");
 				break;
 		}
+	}
+
+	private static void GiveCsvFileName()
+	{
+		Console.WriteLine("Give file a name: ");
+		fileName = Console.ReadLine();
+		fileName += ".csv";
 	}
 
 	private static void BuildArtistSearchUrl()
