@@ -16,6 +16,8 @@ public class Program
 	private static string? recordLabelName;
 	private static int fileOptionChoice;
 	private static string fileName;
+	private static string fullPath;
+	
 
 	public static async Task Main(string[] args)
 	{
@@ -179,7 +181,10 @@ public class Program
 		Console.WriteLine("Give file a name: ");
 		fileName = Console.ReadLine();
 		fileName += ".csv";
-	}
+        fullPath = Path.Combine(FolderPath, fileName);
+		CheckIfFileExists();
+		WriteDataToFile();
+    }
 
 	private static void BuildArtistSearchUrl()
 	{
@@ -286,15 +291,15 @@ public class Program
 			Directory.CreateDirectory(FolderPath);
 		}
 
-		if (!File.Exists(FilePath))
+		if (!File.Exists(fullPath))
 		{
-			File.Create(FilePath).Close();
+			File.Create(fullPath).Close();
 		}
 	}
 
 	private static void WriteDataToFile()
 	{
-		using StreamWriter writer = new StreamWriter(FilePath, true);
+		using StreamWriter writer = new StreamWriter(fullPath, true);
 		for (int i = 0; i < releaseData.Count; i++)
 		{
 			writer.WriteLine(
